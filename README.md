@@ -6,4 +6,4 @@ Pre-requisites:
                -- Numpy
                
                
-Example inputs for master equation calculations and direct abstraction reactions are provided. To run the code, modify the example input according to your system and the execute using Python.
+Example inputs for regular master equation calculations (CH3+OH) and direct abstraction reactions (H2+O2) are provided. To run the code, modify the example input according to your system and the execute using Python.
