@@ -128,7 +128,7 @@ class Mess_Executor:
         else:
             top_bash = io.open('top_bash.sh', 'wb')
 
-        key_ls = pertb_dict.keys()
+        key_ls = list(pertb_dict.keys())
         X_ls = []
         for key in key_ls:
             species, X = key.split("_")[:2]       # species and parameter to perturb
@@ -141,7 +141,7 @@ class Mess_Executor:
 
 
 
-            if X in self.pertb.keys():
+            if X in list(self.pertb.keys()):
                 self.pertb[X].append(perturb_diff)
             else:
                 self.pertb[X] = [perturb_diff]
@@ -254,15 +254,15 @@ class Mess_Executor:
 
         top_bash.close()
         if pert_nom == 'perturbed':
-            print("Generating perturbed PAPR-MESS input files for system %s ..." %self.input_name.split(".")[0])
+            print(("Generating perturbed PAPR-MESS input files for system %s ..." %self.input_name.split(".")[0]))
         elif pert_nom == 'nominal':
-            print("Generating nominal PAPR-MESS input files for system %s ..." %self.input_name.split(".")[0])
+            print(("Generating nominal PAPR-MESS input files for system %s ..." %self.input_name.split(".")[0]))
 
     def execute_MESS(self):
         """Execute the nominal and generated perturbed PAPR-MESS files."""
         os.chdir(self.nwd)
         try:
-            print("Running nominal PAPR-MESS for system %s ..." %self.input_name.split(".")[0])
+            print(("Running nominal PAPR-MESS for system %s ..." %self.input_name.split(".")[0]))
             self.get_rate_constants(self.R_P_list, 'nominal')
             os.system('sh top_bash.sh')
             os.system('rm top_bash.sh')
@@ -270,11 +270,11 @@ class Mess_Executor:
             sys.exit('Wrong input file or directory.')
         os.chdir(self.pwd)
         try:
-            print("Running perturbed PAPR-MESS for system %s ..." %self.input_name.split(".")[0])
+            print(("Running perturbed PAPR-MESS for system %s ..." %self.input_name.split(".")[0]))
             self.get_rate_constants(self.R_P_list, 'perturbed')
             os.system('sh top_bash.sh')
             os.system('rm top_bash.sh')
-            print("Extracting channel-specific rate constants for system %s ..." %self.input_name.split(".")[0])
+            print(("Extracting channel-specific rate constants for system %s ..." %self.input_name.split(".")[0]))
         except:
             sys.exit('Wrong input file or directory.')
 
@@ -335,7 +335,7 @@ class Mess_Executor:
         elif pert_nom == 'nominal':
             pertb_dict = self.nominal_dict
             dwd = self.nwd
-        key_ls = pertb_dict.keys()
+        key_ls = list(pertb_dict.keys())
         cwd = os.getcwd()
         os.chdir(self.mwd)
         for key in key_ls:
@@ -369,5 +369,6 @@ class Mess_Executor:
         for x in R_P_list:
             reactant, product = x.split('->')
             self.get_channel_rate_constants(reactant, product, pert_nom)
+
 
 
