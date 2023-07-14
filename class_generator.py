@@ -92,7 +92,7 @@ def class_generator(cleaned_file, keep_file = True):
         if com == "End":
             curr_species.__dict__[com] = value
 
-        elif com in curr_species.__dict__.keys():
+        elif com in list(curr_species.__dict__.keys()):
             repeated_att += 1
             com = str(com) + ' ' + str(repeated_att)
 
@@ -127,7 +127,7 @@ def class_generator(cleaned_file, keep_file = True):
                         mole = '%d ' %(int(mole_pool[-1].split(' ')[0]) + 1) + mole
                     mole_pool.append(mole)
                     temp_list = []
-                    for y in xrange(3):
+                    for y in range(3):
                         temp_list.append(float(value.pop(0)))
                     temp[mole] = temp_list
                     step -= 4
@@ -149,7 +149,7 @@ def class_generator(cleaned_file, keep_file = True):
             elif 'ElectronicLevels' in com or 'FourierExpansion' in com:
 
                 temp_list = []
-                for y in xrange(len(value) / 2):
+                for y in range(len(value) / 2):
                     y1 = float(value.pop(0))
                     y2 = float(value.pop(0))
                     temp_list.append(tuple([y1,y2]))
@@ -265,7 +265,7 @@ def class_generator_abstraction(cleaned_file, keep_file = False):
         if com == "End":
             curr_species.__dict__[com] = value
 
-        elif com in curr_species.__dict__.keys():
+        elif com in list(curr_species.__dict__.keys()):
             repeated_att += 1
             com = str(com) + ' ' + str(repeated_att)
 
@@ -296,7 +296,7 @@ def class_generator_abstraction(cleaned_file, keep_file = False):
                         mole = '%d ' %(int(mole_pool[-1].split(' ')[0]) + 1) + mole
                     mole_pool.append(mole)
                     temp_list = []
-                    for y in xrange(3):
+                    for y in range(3):
                         temp_list.append(float(value.pop(0)))
                     temp[mole] = temp_list
                     step -= 4
@@ -306,7 +306,7 @@ def class_generator_abstraction(cleaned_file, keep_file = False):
                 temp['value'] = value
             elif 'ElectronicLevels' in com or 'FourierExpansion' in com:
                 temp_list = []
-                for y in xrange(len(value) / 2):
+                for y in range(len(value) / 2):
                     y1 = float(value.pop(0))
                     y2 = float(value.pop(0))
                     temp_list.append(tuple([y1,y2]))
@@ -341,3 +341,4 @@ def class_generator_abstraction(cleaned_file, keep_file = False):
     results[str(curr_species.Barrier[0])] = curr_species
     section_order.append(str(curr_species.Barrier[0]))
     return results, section_order, files_to_copy
+
