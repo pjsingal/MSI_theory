@@ -136,6 +136,11 @@ class Mess_Executor:
             Pres_ls = pertb_dict[key][1]          # should be a list
             perturb_diff = pertb_dict[key][2]     # should be a number
 
+            if species =='colrel':
+                species ='col_rel'
+
+
+
             if X in self.pertb.keys():
                 self.pertb[X].append(perturb_diff)
             else:
@@ -176,9 +181,13 @@ class Mess_Executor:
             else:
                 Mess_bash = io.open('perturb_bash.sh', 'wb')
 
-            # get species to be perturbated and change the simulation conditions
+            # get species to be perturbated and change the simulation conditionsS
+
+
+
             curr_species = copy.deepcopy(self.nominal_model.species_classes[species])
             condition_class = self.nominal_model.species_classes['condition']
+            #print(dir(condition_class),'THIS IS CONDITIONS CLASS')
             # change calculation conditions
             condition_class.change_Temperature(Temp_ls)
             if not self.abstraction:
@@ -187,6 +196,8 @@ class Mess_Executor:
                 self.Punit = '--'
 
             # get the attributes to be perturbated
+            #print(X)
+            #print(species)
             active_para = curr_species.partial_match_key(X)
             if active_para == False:
                 sys.exit("No such attribute defined in the PAPR-MESS input.")
@@ -207,6 +218,21 @@ class Mess_Executor:
                 curr_species.change_Nej_file(perturb_diff)
             elif "FourierExpansion" in active_para:
                 curr_species.change_Hind_rotor(perturb_diff)
+            elif 'PowerOne' in active_para:
+                curr_species.change_power(perturb_diff,power_one_or_power_two=0)
+            elif 'PowerTwo' in active_para:
+                curr_species.change_power(perturb_diff,power_one_or_power_two=1)    
+            elif 'FactorOne' in active_para:
+                curr_species.change_exponential_factor(perturb_diff,factor_one_or_factor_two=0)
+            elif 'FactorTwo' in active_para:
+                curr_species.change_exponential_factor(perturb_diff,factor_one_or_factor_two=1)
+            elif 'Fraction' in active_para:
+                curr_species.change_fraction(perturb_diff)
+            elif 'Sigmas' in active_para:
+                curr_species.change_sigmas(perturb_diff)
+            elif 'Epsilons' in active_para:
+                curr_species.change_epsilons(perturb_diff)
+
 
             self.perturb_model = copy.deepcopy(self.nominal_model)
             self.perturb_model.species_classes[species] = curr_species
@@ -317,7 +343,7 @@ class Mess_Executor:
             Pres_ls = pertb_dict[key][1]
             perturb_diff = pertb_dict[key][2]
             active_dir = dwd + '/' + X
-            os.system('cp %s/MESS_rate_extractor.py %s' %(self.mwd,active_dir))
+            os.system('cp %s/MESS_rate_extractor.py %s' %(self.mwd, active_dir))
             os.chdir(active_dir)
             if os.path.exists('rate_bash.sh'):
                 Rate_bash = io.open('rate_bash.sh', 'ab')
@@ -331,6 +357,7 @@ class Mess_Executor:
                 Rate_bash.write('python MESS_rate_extractor.py %s %s %s %s %s %s \n' %(output_file, P, reactant, product, dwd, self.abstraction))
             else:
                 for P in Pres_ls[0]:
+                    #print(P,key,'WE ARE HERE')
                     P = str(P) + '\ ' + self.Punit
                     output_file = self.input_name.split('.')[0] + '_' + key + '_' + str(perturb_diff) + '.out'
                     Rate_bash.write('python MESS_rate_extractor.py %s %s %s %s %s %s \n' %(output_file, P, reactant, product, dwd, self.abstraction))
@@ -342,4 +369,5 @@ class Mess_Executor:
         for x in R_P_list:
             reactant, product = x.split('->')
             self.get_channel_rate_constants(reactant, product, pert_nom)
+
 

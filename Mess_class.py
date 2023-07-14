@@ -18,12 +18,15 @@ class Mess_Input:
             self.name = self.Bimolecular
         elif hasattr(self, 'Barrier'):
             self.name = self.Barrier
+        elif hasattr(self, 'Model'):
+            self.name = self.Model
+
 
     # determine if units are attched to the key words
     def hasunit(self, attr):
         """True if unit is associated to the command."""
         value = self.__dict__[attr]
-        unit_pool = ['[1/cm]', '[kcal/mol]', '[K]', '[torr]', '[angstrom]', '[amu]', '[au]', '[atm]']
+        unit_pool = ['[1/cm]', '[kcal/mol]', '[K]', '[torr]', '[angstrom]', '[amu]', '[au]', '[atm]', '[km/mol]']
         if type(value) is list:
             if value[-1] in unit_pool:
                 return True
@@ -37,6 +40,7 @@ class Mess_Input:
     def partial_match_key(self, keyword):
         """Partial match the key and get the key."""
         key_ls = self.__dict__.keys()
+        #print(key_ls)
         for key in key_ls:
             if keyword in key:
                 return key
@@ -47,13 +51,33 @@ class Mess_Input:
             elif 'Variational' in keyword:
                 target = keyword.split('Variational')[-1]
                 return 'Variational_%s' %target
+            elif 'PowerOne' in keyword:
+                return 'PowerOne'
+            elif 'PowerTwo' in keyword:
+                return 'PowerTwo'                
+            elif 'FactorOne' in keyword:
+                return 'FactorOne'
+            elif 'FactorTwo' in keyword:
+                return 'FactorTwo'
+            elif 'Epsilons' in keyword:
+                return 'Epsilons'
+            elif 'Sigmas' in keyword:
+                return 'Sigmas'
+            elif 'Fraction' in keyword:
+                return 'Fraction'
+
         return 0
 
     def perturb_Energy(self, original_eng, percentage_diff):
         """Inputs are original Energy dictionary and percentage change."""
+
         org_eng, unit = float(original_eng[0]), original_eng[1]
+        #print(org_eng,'THIS IS ORIGINAL ENERGY')
+
         if unit == '[kcal/mol]':
             new_eng = org_eng + percentage_diff / 349.759
+            print(percentage_diff / 349.759)
+            print(new_eng, 'THIS IS THE NEW ENERGY')
         elif unit == '[1/cm]':
             new_eng = org_eng + percentage_diff
         else:
@@ -68,12 +92,18 @@ class Mess_Input:
             temp.append(nf)
         return temp
 
+
+
     def change_Energy(self, percentage_diff):
         """Change the energy of specific species by defined percentage."""
         key = self.partial_match_key('Energy')
         new_eng = self.perturb_Energy(self.__dict__[key], percentage_diff)
         self.__dict__[key][0] = str(new_eng)
 
+
+
+        #print('this is self dict')
+        #print(self.__dict)
         # org_eng = float(self.__dict__[key][0])
         # unit = self.__dict__[key][1]
         # if unit == '[kcal/mol]':
@@ -107,6 +137,7 @@ class Mess_Input:
     def change_Hind_rotor(self, percentage_diff):
         """Scale the Hindered rotor frequencies by the provided percentage."""
         key = 'FourierExpansion'
+        #print(self.__dict__)
         org_exp = self.__dict__[key]['value']
         temp = []
         for exp in org_exp:
@@ -128,6 +159,10 @@ class Mess_Input:
                     temp.append(int(x))
                 self.__dict__[target] = temp
 
+      
+
+
+
 class Computation_Cond(Mess_Input):
     """Computational conditions of MESS."""
     def __init__(self):
@@ -142,6 +177,7 @@ class Computation_Cond(Mess_Input):
         """Change the simulation temperature list."""
         key = 'TemperatureList'
         self.__dict__[key][0] = str(Temp_list)
+
 
     def change_Pressure(self, Pres_list):
         """Change the simulation temperature list."""
@@ -187,6 +223,139 @@ class Collision_Relaxation(Mess_Input):
     def __init__(self):
         self.order = []
 
+
+    def change_power(self,percentage_diff,power_one_or_power_two=0):
+        key = 'Power'
+        #print(self.__dict__[key][0])
+        temp = self.perturb_power(self.__dict__[key], percentage_diff, power_one_or_power_two=0)
+        self.__dict__[key] = temp  
+        #print(temp)
+
+    def change_exponential_factor(self,percentage_diff,factor_one_or_factor_two=0):
+        key = 'Factor'
+        temp = self.perturb_exponentail_factor(self.__dict__[key], percentage_diff,factor_one_or_factor_two=factor_one_or_factor_two)
+        #actually don't think i need to speceify the difference here 
+        self.__dict__[key][0] = str(temp) 
+
+    def change_epsilons(self,percentage_diff):
+        key = 'Epsilons'
+        temp = self.perturb_epsilons(self.__dict__[key], percentage_diff)
+        self.__dict__[key][0] = str(temp)
+
+    def change_sigmas(self,percentage_diff):
+        key = 'Sigmas'
+        temp = self.perturb_sigmas(self.__dict__[key], percentage_diff)
+        self.__dict__[key][0] = str(temp)
+
+    def change_fraction(self,percentage_diff):
+        key = 'Fraction'
+        temp = self.perturb_fraction(self.__dict__[key], percentage_diff)
+        self.__dict__[key] = temp 
+
+    def perturb_power(self,org_power,percentage_diff,power_one_or_power_two=0):
+        if len(org_power) >1 :
+            orig_power_list = org_power
+            perturbed_power = orig_power_list[power_one_or_power_two] + percentage_diff
+            orig_power_list[power_one_or_power_two] = perturbed_power
+            return orig_power_list
+
+        else:
+            perturbed_power = org_power[0] + percentage_diff
+            perturbed_power = [perturbed_power]
+            return perturbed_power
+
+    def perturb_exponentail_factor(self,org_exponentail_factor,percentage_diff,factor_one_or_factor_two=0):
+        #check if this is a list or not 
+
+        org_exponentail_factor_list, unit = org_exponentail_factor[0], org_exponentail_factor[1]
+        if '[' and ']' in org_exponentail_factor_list:
+            
+            org_exponentail_factor_list, unit = org_exponentail_factor[0], org_exponentail_factor[1]
+            org_exponentail_factor_list = org_exponentail_factor_list.strip('[').strip(']').split(',')
+            org_exponentail_factor_list = [float(item) for item in org_exponentail_factor_list]
+            
+            exponentail_factor_being_perturbed = org_exponentail_factor_list[factor_one_or_factor_two]
+            if unit == '[kcal/mol]':
+                new_exponentail_factor = exponentail_factor_being_perturbed * (1+percentage_diff)
+
+            elif unit == '[1/cm]':
+                new_exponentail_factor = exponentail_factor_being_perturbed * (1+percentage_diff)
+
+            else:
+                sys.exit("Error: Unrecognizable unit: %s." %unit)
+
+            org_exponentail_factor_list[factor_one_or_factor_two] = new_exponentail_factor
+
+            return org_exponentail_factor_list
+
+        else:
+            org_exponentail_factor, unit = float(org_exponentail_factor[0]), org_exponentail_factor[1]
+            if unit == '[kcal/mol]':
+                #new_exponentail_factor = org_exponentail_factor + percentage_diff / 349.759
+                new_exponentail_factor = org_exponentail_factor * (1+percentage_diff)
+
+            elif unit == '[1/cm]':
+                #new_exponentail_factor = org_exponentail_factor + percentage_diff
+                new_exponentail_factor = org_exponentail_factor * (1+percentage_diff)
+
+            else:
+                sys.exit("Error: Unrecognizable unit: %s." %unit)
+            
+            return new_exponentail_factor
+
+    def perturb_epsilons(self,org_epsilon,percentage_diff):
+        #this function is only going to perturb the second epsiolon
+        epsilon_list, unit = org_epsilon[0], org_epsilon[1]
+        epsilon_list = epsilon_list.strip('[').strip(']').split(',')
+        epsilon_list = [float(item) for item in epsilon_list]
+
+        epsilon_being_perturbed = epsilon_list[1]
+
+        if unit == '[kcal/mol]':
+            new_epsilon_being_perturbed = epsilon_being_perturbed *(1+percentage_diff)
+
+        elif unit == '[1/cm]':
+            new_epsilon_being_perturbed = epsilon_being_perturbed *(1+percentage_diff)
+
+
+
+        else:
+            sys.exit("Error: Unrecognizable unit: %s." %unit)
+
+        epsilon_list[1] = new_epsilon_being_perturbed
+        return epsilon_list
+
+    def perturb_sigmas(self,org_sigma,percentage_diff):
+        #this function is only going to perturb the second sigma
+        sigma_list, unit = org_sigma[0], org_sigma[1]
+        sigma_list = sigma_list.strip('[').strip(']').split(',')
+        sigma_list = [float(item) for item in sigma_list]
+
+        sigma_being_perturbed = sigma_list[1]
+
+        if unit == '[angstrom]':
+            #new_epsilon_being_perturbed = epsilon_being_perturbed + percentage_diff
+            new_sigma_being_perturbed = sigma_being_perturbed *(1+percentage_diff) 
+
+        else:
+            sys.exit("Error: Unrecognizable unit: %s." %unit)
+
+        sigma_list[1] = new_sigma_being_perturbed
+        return sigma_list
+
+    def perturb_fraction(self,org_fraction,percentage_diff):
+        fraction_list  = org_fraction
+        first_fraction = fraction_list[0]
+        first_fraction_perturbed = first_fraction * (1+percentage_diff)
+        second_fraction_calculated = 1 - first_fraction_perturbed
+
+        fraction_list_perturbed = [first_fraction_perturbed,second_fraction_calculated]
+
+        return fraction_list_perturbed
+
+
+
+
 class Relaxtion_Exponential(Collision_Relaxation):
     def __init__(self, Factor, Power, ExponentCutoff):
         self.Factor = [str(Factor), '[1/cm]']
@@ -227,6 +396,7 @@ class Barrier(Mess_Input):
     def __init__(self):
         self.order = []
 
+
     def change_Img_Frequency(self, percentage_diff):
         """Scale the tunneling imaginary frequencies by specified percentage."""
         org_fre = float(self.ImaginaryFrequency[0])
@@ -257,4 +427,27 @@ class Barrier(Mess_Input):
                     temp = self.perturb_Frequencies(self.__dict__[k]['value'], percentage_diff)
                     self.__dict__[k]['value'] = temp
 
+#Added these two fucntion
+    # def change_Hind_rotor(self, percentage_diff):
+    #     """Scale the Hindered rotor frequencies by the provided percentage."""
+    #     key = 'FourierExpansion'
+    #     org_exp = self.__dict__[key]['value']
+    #     temp = []
+    #     for exp in org_exp:
+    #         n, e = exp
+    #         ne = e * (1. + percentage_diff)
+    #         temp.append((n, ne))
+    #     self.__dict__[key]['value'] = temp
 
+    # def Hindered_rotor_correction(self):
+    #     """In PAPR-MESS code, for hindered rotor axis and symmetry have to be integers,
+    #        otherwise it causes error."""
+    #     target_list = ['Axis', 'Symmetry']
+    #     for target in target_list:
+    #         if not hasattr(self, target):
+    #             break
+    #         else:
+    #             temp = []
+    #             for x in self.__dict__[target]:
+    #                 temp.append(int(x))
+    #             self.__dict__[target] = temp
