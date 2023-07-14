@@ -18,12 +18,12 @@ class Preprocessor:
         self.nominal_file = nominal_file
 
     def clean_input(self):
-        print("Cleaning input file for %s..." %self.nominal_file.split(".")[0])
+        print(("Cleaning input file for %s..." %self.nominal_file.split(".")[0]))
         self.cleaned_file = file_cleaner(self.nominal_file)
         return 1
 
     def generate_species_classes(self, abstraction=False):
-        print("Generating PAPR-MESS classes for %s..." %self.nominal_file.split(".")[0])
+        print(("Generating PAPR-MESS classes for %s..." %self.nominal_file.split(".")[0]))
         if not abstraction:
             self.species_classes, self.section_order, self.files_to_copy = class_generator(self.cleaned_file)
         else:
