@@ -39,7 +39,7 @@ class Mess_Input:
 
     def partial_match_key(self, keyword):
         """Partial match the key and get the key."""
-        key_ls = self.__dict__.keys()
+        key_ls = list(self.__dict__.keys())
         #print(key_ls)
         for key in key_ls:
             if keyword in key:
@@ -76,8 +76,8 @@ class Mess_Input:
 
         if unit == '[kcal/mol]':
             new_eng = org_eng + percentage_diff / 349.759
-            print(percentage_diff / 349.759)
-            print(new_eng, 'THIS IS THE NEW ENERGY')
+            print((percentage_diff / 349.759))
+            print((new_eng, 'THIS IS THE NEW ENERGY'))
         elif unit == '[1/cm]':
             new_eng = org_eng + percentage_diff
         else:
@@ -376,7 +376,7 @@ class Bimolecular(Mess_Input):
 
     def get_bimolecular_pair(self):
         """Get the PAPR-MESS bimolecular species paris."""
-        key_ls = self.__dict__.keys()
+        key_ls = list(self.__dict__.keys())
         fra = []
         for key in key_ls:
             if 'Fragment' in key:
