@@ -92,7 +92,7 @@ class PAPR_MESS:
             pert = {}
             coef_dict = {}
             # generate a rate constants dictionary for each perturbation
-            for key in wpert.keys():
+            for key in list(wpert.keys()):
                 rate[key] = {}
                 pert[key] = {}
                 coef_dict[key] = {}
@@ -117,10 +117,10 @@ class PAPR_MESS:
                         chan_rate = np.array(chan_rate)
                         
                         print(rate)
-                        print(self.key)
+                        print((self.key))
 
 
-                        if self.channel in rate[self.key].keys():
+                        if self.channel in list(rate[self.key].keys()):
                             rate[self.key][self.channel] = np.concatenate((rate[self.key][self.channel], chan_rate))
                         else:
                             rate[self.key][self.channel] = np.array(chan_rate)
@@ -168,10 +168,10 @@ class PAPR_MESS:
                 fhand = io.open('Chebyshev_fit.txt', 'ab')
             else:
                 fhand = io.open('Chebyshev_fit.txt', 'wb')
-            for spc in rate.keys():
+            for spc in list(rate.keys()):
                 fhand.write('=' * 30 + '\n')
                 fhand.write(spc + '\n')
-                for key in rate[spc].keys():
+                for key in list(rate[spc].keys()):
                     k = rate[spc][key]
                     fhand.write(key + '\n')
                     coef = self.cheby_poly(n_T, n_P, k, self.T_ls, self.P_ls, P_min, P_max, T_min, T_max).reshape((n_P, n_T))
@@ -193,7 +193,7 @@ class PAPR_MESS:
                 self.Cheb_coef['perturbed'] = coef_dict
                 self.pert_ls['perturbed'] = pert
         if target_dir == None:
-            print("Fitting channel-specific rate conctants into Chebyshev form for system %s ..." %self.input_name.split(".")[0])
+            print(("Fitting channel-specific rate conctants into Chebyshev form for system %s ..." %self.input_name.split(".")[0]))
 
     def first_cheby_poly(self, x, n):
         '''Generate n-th order Chebyshev ploynominals of first kind.'''
@@ -248,7 +248,7 @@ class PAPR_MESS:
             self.aggregated_sens['Temperature (K)'] = np.tile(self.T_ls, len(self.P_ls))
         self.Cheb_sens = {}
         # decide sensitivity coefficients for each perturbation
-        for key in self.pert_dict.keys():
+        for key in list(self.pert_dict.keys()):
             # write the sensitivity coefficients into file
             os.chdir(self.twd)
             if os.path.exists('Chebyshev_sens.txt'):
@@ -261,15 +261,15 @@ class PAPR_MESS:
             Cheb_sens = {}
             # determine nominal calculation
             nom_key = key[:-1] + '1'
-            if len(self.Cheb_coef['nominal'].keys()) == 1:
-                nom_key = self.Cheb_coef['nominal'].keys()[0]
+            if len(list(self.Cheb_coef['nominal'].keys())) == 1:
+                nom_key = list(self.Cheb_coef['nominal'].keys())[0]
             # calculate the channel-specific sensitivity coefficients
-            for chan in self.Cheb_coef['perturbed'][key].keys():
+            for chan in list(self.Cheb_coef['perturbed'][key].keys()):
                 rate_diff = self.Cheb_coef['perturbed'][key][chan] - self.Cheb_coef['nominal'][nom_key][chan]
                 if 'Energy' in key:
                     sens = rate_diff / (self.pert_ls['perturbed'][key] - self.pert_ls['nominal'][nom_key])
-                    print((self.pert_ls['perturbed'][key] - self.pert_ls['nominal'][nom_key]),'DIFFERNENCE')
-                    print(self.pert_ls['perturbed'][key],self.pert_ls['nominal'][nom_key])
+                    print(((self.pert_ls['perturbed'][key] - self.pert_ls['nominal'][nom_key]),'DIFFERNENCE'))
+                    print((self.pert_ls['perturbed'][key],self.pert_ls['nominal'][nom_key]))
                     if aggregated_sens:
                         self.aggregated_sens['%s_%s'%(key,chan)] = self.calculate_sensitivity(sens).reshape((1,-1))[0] * 349.758 * np.log(10)
                 elif 'Power' in key:
@@ -306,7 +306,7 @@ class PAPR_MESS:
             self.aggregated_sens.to_csv("Aggregated_sens.csv", index=False)
         if not debug:
             os.chdir(self.mwd)
-            print("Calculating channel-specific sensitivity coefficients for Chebyshev polynomials for system %s ..." %self.input_name.split('.')[0])
+            print(("Calculating channel-specific sensitivity coefficients for Chebyshev polynomials for system %s ..." %self.input_name.split('.')[0]))
 
     def fit_Arr_perturbed_rates(self, target_dir=None):
         """Fit rate constants into Arrhenius formula."""
@@ -383,7 +383,7 @@ class PAPR_MESS:
                     temp.append(float(line.split(',')[0]))
                     rate.append(float(line.split(',')[1]))
         if target_dir == None:
-            print("Fitting channel-specific rate conctants into Arrhenius form for system %s ..." %self.input_name.split(".")[0])
+            print(("Fitting channel-specific rate conctants into Arrhenius form for system %s ..." %self.input_name.split(".")[0]))
 
     def log_three_para_Arr_fit(self, Temp, rate, ini_guess = (1,1,1), max_initeration = 1000000):
         '''Fit three-parameter Arrhenius rate coefficient expression.'''
@@ -396,7 +396,7 @@ class PAPR_MESS:
         """Calculate sensitivity coefficients for Arrhenius fittings."""
         # print(self.Arr_coef)
         # decide sensitivity coefficients for each perturbation
-        for key in self.Arr_coef.keys():
+        for key in list(self.Arr_coef.keys()):
             # write the sensitivity coefficients into file
             os.chdir(self.twd)
             if os.path.exists('Arrhenius_sens.txt'):
@@ -407,15 +407,15 @@ class PAPR_MESS:
             fhand.write(key + '\n')
             Arr_sens = {}
             # determine nominal calculation
-            for channel in self.Arr_coef.keys():
-                for pressure in self.Arr_coef[channel].keys():
+            for channel in list(self.Arr_coef.keys()):
+                for pressure in list(self.Arr_coef[channel].keys()):
                     # get nominla fittings
-                    for key in self.Arr_coef[channel][pressure].keys():
+                    for key in list(self.Arr_coef[channel][pressure].keys()):
                         if 'nominal' in key:
                             nom_pert = float(key.split('_')[-1])
                             nom_coef = self.Arr_coef[channel][pressure][key]
                             break
-                    for key in self.Arr_coef[channel][pressure].keys():
+                    for key in list(self.Arr_coef[channel][pressure].keys()):
                         if 'nominal' in key:
                             continue
                         else:
@@ -430,7 +430,7 @@ class PAPR_MESS:
                         fhand.write(str(sens) + '\n')
         fhand.close()
         os.chdir(self.mwd)
-        print("Calculating channel-specific sensitivity coefficients for Arrhenius fittings for system %s ..." %self.input_name.split('.')[0])
+        print(("Calculating channel-specific sensitivity coefficients for Arrhenius fittings for system %s ..." %self.input_name.split('.')[0]))
 
     def calculate_sensitivity(self, sens_coef):
         '''Calculate the aggregated sensiticity as a function of temperature and pressure.'''
@@ -446,3 +446,4 @@ class PAPR_MESS:
                         cheb_mat[n*len(self.T_ls)+m, i*self.n_P+j] = P_cheb * T_cheb
         sens = np.dot(cheb_mat, sens_coef.reshape((-1,1)))
         return sens
+
