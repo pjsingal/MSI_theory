@@ -33,7 +33,7 @@ class Mess_Executor:
         curr_class.Hindered_rotor_correction() # to make hindered rotor axis and symmetry have to be integers, otherwise MESS raises errors
         order = curr_class.__dict__["order"]
         # append a sepcific part into the input file
-        fhand = io.open(output_name, 'ab')
+        fhand = io.open(output_name, 'a')
         spec_list = ['Frequencies', 'ElectronicLevels', 'WellDepth', 'FourierExpansion']
 
         for k in order:
@@ -97,7 +97,7 @@ class Mess_Executor:
     def write_file(self, output_name, model, class_order):
         """Write the entire PAPR-MESS input file."""
         # initialize the file
-        fhand = io.open(output_name, 'wb')
+        fhand = io.open(output_name, 'w')
         fhand.close()
         # write classes in the given order
         for tar_class in class_order:
@@ -124,9 +124,9 @@ class Mess_Executor:
 
         # generate top layer bash file
         if os.path.exists('top_bash.sh'):
-            top_bash = io.open('top_bash.sh', 'ab')
+            top_bash = io.open('top_bash.sh', 'a')
         else:
-            top_bash = io.open('top_bash.sh', 'wb')
+            top_bash = io.open('top_bash.sh', 'w')
 
         key_ls = list(pertb_dict.keys())
         X_ls = []
@@ -177,9 +177,9 @@ class Mess_Executor:
 
             # write the bash file for running perturbed input files and extract rate constants
             if os.path.isfile('perturb_bash.sh'):
-                Mess_bash = io.open('perturb_bash.sh', 'ab')
+                Mess_bash = io.open('perturb_bash.sh', 'a')
             else:
-                Mess_bash = io.open('perturb_bash.sh', 'wb')
+                Mess_bash = io.open('perturb_bash.sh', 'w')
 
             # get species to be perturbated and change the simulation conditionsS
 
@@ -346,9 +346,9 @@ class Mess_Executor:
             os.system('cp %s/MESS_rate_extractor.py %s' %(self.mwd, active_dir))
             os.chdir(active_dir)
             if os.path.exists('rate_bash.sh'):
-                Rate_bash = io.open('rate_bash.sh', 'ab')
+                Rate_bash = io.open('rate_bash.sh', 'a')
             else:
-                Rate_bash = io.open('rate_bash.sh', 'wb')
+                Rate_bash = io.open('rate_bash.sh', 'w')
             # write bash command to get channel specific data for each pressure
             # for abstraction
             if self.abstraction:

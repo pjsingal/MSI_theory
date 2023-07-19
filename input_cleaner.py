@@ -10,11 +10,11 @@ import io
 
 # read input file and get rid of the comments and unnecessary commands
 def file_cleaner(file_name, simplifid = False):
-    fhand = io.open(file_name, "rb")
+    fhand = io.open(file_name, "r")
     lines = fhand.readlines()
     fhand.close()
     cleaned_file = 'cleaned_input.txt'
-    cleaned_input = io.open(cleaned_file, 'wb')
+    cleaned_input = io.open(cleaned_file, 'w')
     spec_list = ["Geometry[angstrom]", "ElectronicLevels[1/cm]", "FourierExpansion[1/cm]", "FragmentGeometry[angstrom]", "FourierExpansion[kcal/mol]"]
     #, "Potential[kcal/mol]"
     skip_start = -1
@@ -26,6 +26,7 @@ def file_cleaner(file_name, simplifid = False):
             continue
         else:
             # replace every special spacing character to spcae
+            print(line)
             line = line.replace('\t', ' ').replace('\n', '').replace('\r', '')
             line = line.strip(' ')
             # Skip empty lines and comment lines

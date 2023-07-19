@@ -28,7 +28,7 @@ def class_generator(cleaned_file, keep_file = True):
 
 
     # read in the cleaned file
-    fhand = io.open(cleaned_file, 'rb')
+    fhand = io.open(cleaned_file, 'r')
     lines = fhand.readlines()
     fhand.close()
 
@@ -149,7 +149,7 @@ def class_generator(cleaned_file, keep_file = True):
             elif 'ElectronicLevels' in com or 'FourierExpansion' in com:
 
                 temp_list = []
-                for y in range(len(value) / 2):
+                for y in range(len(value) // int(2)):
                     y1 = float(value.pop(0))
                     y2 = float(value.pop(0))
                     temp_list.append(tuple([y1,y2]))
@@ -220,7 +220,7 @@ def class_generator_abstraction(cleaned_file, keep_file = False):
     spec_list = ['Geometry', 'Frequencies', 'ElectronicLevels', 'FragmentGeometry', 'FourierExpansion']
 
     # read in the cleaned file
-    fhand = io.open(cleaned_file, 'rb')
+    fhand = io.open(cleaned_file, 'r')
     lines = fhand.readlines()
     fhand.close()
 
