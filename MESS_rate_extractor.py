@@ -24,7 +24,7 @@ def T_rate_extractor(file_name, P, reactant, product):
     channel = reactant + '->' + product
     rate = []
     temp = []
-    fhand = io.open(file_name, 'rb')
+    fhand = io.open(file_name, 'r')
 
     
 
@@ -122,7 +122,7 @@ def T_rate_abstraction(file_name, reactant, product):
     channel = reactant + '->' + product
     rate = []
     temp = []
-    fhand = io.open(file_name, 'rb')
+    fhand = io.open(file_name, 'r')
     lines = fhand.readlines()
     fhand.close()
     startline = 1e10

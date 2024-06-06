@@ -79,7 +79,7 @@ class PAPR_MESS:
             else:
                 wpert = self.pert_dict
 
-            fhand = io.open('T_rate.csv', 'rb')
+            fhand = io.open('T_rate.csv', 'r')
             lines = fhand.readlines()
             fhand.close()
 
@@ -165,9 +165,9 @@ class PAPR_MESS:
 
             
             if os.path.exists('Chebyshev_fit.txt'):
-                fhand = io.open('Chebyshev_fit.txt', 'ab')
+                fhand = io.open('Chebyshev_fit.txt', 'a')
             else:
-                fhand = io.open('Chebyshev_fit.txt', 'wb')
+                fhand = io.open('Chebyshev_fit.txt', 'w')
             for spc in list(rate.keys()):
                 fhand.write('=' * 30 + '\n')
                 fhand.write(spc + '\n')
@@ -252,9 +252,9 @@ class PAPR_MESS:
             # write the sensitivity coefficients into file
             os.chdir(self.twd)
             if os.path.exists('Chebyshev_sens.txt'):
-                fhand = io.open('Chebyshev_sens.txt', 'ab')
+                fhand = io.open('Chebyshev_sens.txt', 'a')
             else:
-                fhand = io.open('Chebyshev_sens.txt', 'wb')
+                fhand = io.open('Chebyshev_sens.txt', 'w')
             fhand.write('='*30 + '\n')
             fhand.write(key + '\n')
 
@@ -315,7 +315,7 @@ class PAPR_MESS:
         for wd in [self.nwd, self.pwd]:
             os.chdir(wd)
 
-            fhand = io.open('T_rate.csv', 'rb')
+            fhand = io.open('T_rate.csv', 'r')
             lines = fhand.readlines()
             fhand.close()
 
@@ -353,9 +353,9 @@ class PAPR_MESS:
                         temp = []
                         rate = []
                         if os.path.exists('Arrhenius_fit.txt'):
-                            fhand = io.open('Arrhenius_fit.txt', 'ab')
+                            fhand = io.open('Arrhenius_fit.txt', 'a')
                         else:
-                            fhand = io.open('Arrhenius_fit.txt', 'wb')
+                            fhand = io.open('Arrhenius_fit.txt', 'w')
                         fhand.write('=' * 30 + '\n')
                         fhand.write(self.system + '\n')
                         fhand.write(self.pertb + '\n')
@@ -400,9 +400,9 @@ class PAPR_MESS:
             # write the sensitivity coefficients into file
             os.chdir(self.twd)
             if os.path.exists('Arrhenius_sens.txt'):
-                fhand = io.open('Arrhenius_sens.txt', 'ab')
+                fhand = io.open('Arrhenius_sens.txt', 'a')
             else:
-                fhand = io.open('Arrhenius_sens.txt', 'wb')
+                fhand = io.open('Arrhenius_sens.txt', 'w')
             fhand.write('='*30 + '\n')
             fhand.write(key + '\n')
             Arr_sens = {}
