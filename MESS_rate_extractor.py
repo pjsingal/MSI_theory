@@ -188,9 +188,9 @@ output[channel] = rate
 cwd = os.getcwd()
 os.chdir(sys.argv[5])    # change directory to the perturbed working directory
 if os.path.exists('T_rate.csv'):
-    fhand = io.open('T_rate.csv', 'ab')
+    fhand = io.open('T_rate.csv', 'a')
 else:
-    fhand = io.open('T_rate.csv', 'wb')
+    fhand = io.open('T_rate.csv', 'w')
 fhand.write('=' * 40 + '\n')
 fhand.write(sys.argv[1] + '\n')
 fhand.write(sys.argv[2] + '\n')
